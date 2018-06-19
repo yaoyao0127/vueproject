@@ -9,7 +9,8 @@
       </div>
       <div id="classify">
         <span id="label">分类</span>
-         <select name="classify" id="select" v-modal="selected" @change="sortClassify()">
+         <select class="form-control" name="classify" id="select" v-model="classifyOption" @change="sortClassify()">
+           <option disabled selected value="">请选择</option>
            <option value="class">课程类别</option>
            <option value="level">课程级别</option>
            <option value="status">课程状态</option>
@@ -17,7 +18,7 @@
          </select>
       </div>
       <div id="upload">
-        <button id="uploadBtn" type="button" class="btn btn-primary">上传</button>
+        <button id="uploadBtn" type="button" class="btn btn-primary"  data-toggle="modal" data-target="#myModal">上传</button>
       </div>
       <div id="changeSort">
         <button id="changeSortBtn" type="button" class="btn btn-primary">修改排序方式</button>
@@ -50,6 +51,22 @@
         </tbody>
       </table>
     </div>
+    <!-- 模态框（Modal） -->
+    <div class="modal hide fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title" id="myModalLabel">模态框（Modal）标题</h4>
+                </div>
+                <div class="modal-body">在这里添加一些文本</div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary">提交更改</button>
+                </div>
+            </div><!-- /.modal-content -->
+        </div><!-- /.modal -->
+    </div>
   </div>
 </template>
 <!-- js -->
@@ -60,7 +77,7 @@ export default {
     return {
       courses: [],
       searchId:'',
-      selected:'',
+      classifyOption:'',
     }
   },
   mounted(){
@@ -71,13 +88,16 @@ export default {
   },
   methods:{
     fetchCourses:function(){
-      fetch('http://localhost:8080/api/courses')
-        .then(response => response.json())
+        fetch('http://localhost:8080/api/courses')
+        .then(console.log(response);response => response.json();)
         .then(json => {
           for(let i=0;i<json.length;i++){
             this.courses.push(json[i]);
             //console.log(this.courses);
           }          
+        })
+        .catch(err => {
+                  console.log(err)
         })
     },
     fetchSearchResults:function(){
@@ -101,20 +121,47 @@ export default {
           }          
         })
     },
-    fetchSortResults:function(){
+    fetchSortResults:function(e){
         fetch('http://localhost:8080/api/courses')
         .then(response => response.json())
         .then(json => {
-          switch (this.selected){
+          switch (this.classifyOption){
             case 'class':
               this.courses=[];
               for(let i=0;i<json.length;i++){
                 if (json[i].class=='音乐基础课程'){
                   this.courses.push(json[i]);
                 }   
-                //console.log(this.courses);
+                console.log(this.courses);
               } 
-              break; 
+            break; 
+            case 'level':
+              this.courses=[];
+              for(let i=0;i<json.length;i++){
+                if (json[i].level=='初级'){
+                  this.courses.push(json[i]);
+                }   
+                console.log(this.courses);
+              } 
+            break; 
+            case 'status':
+              this.courses=[];
+              for(let i=0;i<json.length;i++){
+                if (json[i].status=='已上线'){
+                  this.courses.push(json[i]);
+                }   
+                console.log(this.courses);
+              } 
+            break; 
+            case 'updateTime':
+              this.courses=[];
+              for(let i=0;i<json.length;i++){
+                if (json[i].updateTime=='20180423 20:10:00'){
+                  this.courses.push(json[i]);
+                }   
+                console.log(this.courses);
+              } 
+            break; 
           }       
         })
     },
@@ -122,9 +169,15 @@ export default {
       this.fetchSearchResults();   
     },
     sortClassify:function(){
-      this.fetchSortResults(); 
-      console.log(this.selected);  
+      this.fetchSortResults();
+      console.log(this.classifyOption); 
+
     },
+    upload:function(){
+        // var modal=document.getElementById('myModal');
+        // modal.modal='show';
+        console.log('hh');
+    }
   }
 }
 </script>
